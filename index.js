@@ -237,7 +237,7 @@ const downRotate = (num) => {
 const QuitProcess = () => {
     endTime = new Date(); // 종료 시각 측정
     elapsedTime = endTime - startTime;
-    console.log(`경과시간: ${elapsedTime.getMinutes()} : ${elapsedTime.getSeconds()}`);
+    console.log(`경과시간: ${elapsedTime}`);
     console.log(`조작갯수: ${count}`);
     console.log('이용해주셔서 감사합니다. 뚜뚜뚜.');
     process.exit(0);
