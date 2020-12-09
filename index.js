@@ -118,23 +118,98 @@ const upRotate = (num) => {
 };
 
 // L 왼쪽면을 기준으로 회전
-const leftRotate = () => {
+const leftRotate = (num) => {
+    temp = new Array(3);
+    const col = (num === 0 ? 2 : 0);
 
+    for (let i = 0; i < 3; i++) {
+        temp[i] = cube[cube_index.U][i][num];
+    }
+    // B, D 또는 U, B 끼리 이동 시에는 2 - i
+    // B -> U(시계 방향)으로 이동 시에는 2 -> 0 열, U -> B(반시계방향)으로 이동 시에는 0 -> 2 열
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.U][i][num] = cube[cube_index.B][2 - i][col];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.B][i][col] = cube[cube_index.D][2 - i][num];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.D][i][num] = cube[cube_index.F][i][num];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.F][i][num] = temp[i];
+    }
+    PrintCube();
 };
 
 // F 앞면을 기준으로 회전
-const frontRotate = () => {
+const frontRotate = (num) => {
+    temp = new Array(3);
+    const col = (num === 0 ? 2 : 0);
 
+    for (let i = 0; i < 3; i++) {
+        temp[i] = cube[cube_index.U][num][i];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.U][num][i] = cube[cube_index.L][2 - i][num];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.L][i][num] = cube[cube_index.D][col][i];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.D][col][i] = cube[cube_index.R][2 - i][col];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.R][i][col] = temp[i];
+    }
+    PrintCube();
 };
 
 // R 오른쪽면을 기준으로 회전
-const rightRotate = () => {
+const rightRotate = (num) => {
+    temp = new Array(3);
+    const col = (num === 0 ? 2 : 0);
 
+    for (let i = 0; i < 3; i++) {
+        temp[i] = cube[cube_index.U][i][num];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.U][i][num] = cube[cube_index.F][i][num];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.F][i][num] = cube[cube_index.D][i][num];
+    }
+    // B, D 또는 U, B 끼리 이동 시에는 2 - i
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.D][i][num] = cube[cube_index.B][2 - i][col];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.B][i][col] = temp[2 - i];
+    }
+    PrintCube();
 };
 
 // B 뒷면을 기준으로 회전
-const backRotate = () => {
+const backRotate = (num) => {
+    temp = new Array(3);
+    const col = (num === 0 ? 2 : 0);
 
+    for (let i = 0; i < 3; i++) {
+        temp[i] = cube[cube_index.U][num][i];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.U][num][i] = cube[cube_index.R][i][col];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.R][i][col] = cube[cube_index.D][col][2 - i];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.D][col][i] = cube[cube_index.L][i][num];
+    }
+    for (let i = 0; i < 3; i++) {
+        cube[cube_index.L][i][num] = temp[2 - i];
+    }
+    PrintCube();
 };
 
 // D 아랫면을 기준으로 회전
@@ -190,22 +265,22 @@ const RubiksCube = (args) => {
                 break;
             case 'L\'':
                 counterClockwise(cube_index.L);
-                rightRotate();
+                rightRotate(0);
                 AddCount();
                 break;
             case 'F\'':
                 counterClockwise(cube_index.F);
-                backRotate();
+                backRotate(2);
                 AddCount();
                 break;
             case 'R\'':
                 counterClockwise(cube_index.R);
-                leftRotate();
+                leftRotate(2);
                 AddCount();
                 break;
             case 'B\'':
                 counterClockwise(cube_index.B);
-                frontRotate();
+                frontRotate(0);
                 AddCount();
                 break;
             case 'D\'':
@@ -220,22 +295,22 @@ const RubiksCube = (args) => {
                 break;
             case 'L':
                 clockwise(cube_index.L);
-                leftRotate();
+                leftRotate(0);
                 AddCount();
                 break;
             case 'F':
                 clockwise(cube_index.F);
-                frontRotate();
+                frontRotate(2);
                 AddCount();
                 break;
             case 'R':
                 clockwise(cube_index.R);
-                rightRotate();
+                rightRotate(2);
                 AddCount();
                 break;
             case 'B':
                 clockwise(cube_index.B);
-                backRotate();
+                backRotate(0);
                 AddCount();
                 break;
             case 'D':
@@ -261,6 +336,7 @@ const main = () => {
             RubiksCube(input);
         } catch (err) {
             console.log('문자열 형태만 입력 가능합니다.');
+            console.error(err);
         }
     }
 }
