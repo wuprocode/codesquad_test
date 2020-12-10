@@ -4,6 +4,7 @@ const twoDArray = Array(3).fill().map(() => Array(3));
 let startTime;
 let endTime;
 let count = 0; // 조작갯수
+let isError = false;
 
 // 큐브 초기화
 const InitCube = () => {
@@ -29,9 +30,79 @@ const cube_index = {
     D: 5,
 };
 
-// 큐브 무작위 섞기
-const mixCube = () => {
+const rotating = (rotate) => {
+    isError = false;
+    switch (rotate) {
+        case 'U\'':
+            counterClockwise(cube_index.U);
+            downRotate(0);
+            break;
+        case 'L\'':
+            counterClockwise(cube_index.L);
+            rightRotate(0);
+            break;
+        case 'F\'':
+            counterClockwise(cube_index.F);
+            backRotate(2);
+            break;
+        case 'R\'':
+            counterClockwise(cube_index.R);
+            leftRotate(2);
+            break;
+        case 'B\'':
+            counterClockwise(cube_index.B);
+            frontRotate(0);
+            break;
+        case 'D\'':
+            counterClockwise(cube_index.D);
+            upRotate(2);
+            break;
+        case 'U':
+            clockwise(cube_index.U);
+            upRotate(0);
+            break;
+        case 'L':
+            clockwise(cube_index.L);
+            leftRotate(0);
+            break;
+        case 'F':
+            clockwise(cube_index.F);
+            frontRotate(2);
+            break;
+        case 'R':
+            clockwise(cube_index.R);
+            rightRotate(2);
+            break;
+        case 'B':
+            clockwise(cube_index.B);
+            backRotate(0);
+            break;
+        case 'D':
+            clockwise(cube_index.D)
+            downRotate(2);
+            break;
+        case 'Q':
+            QuitProcess();
+            break;
+        default:
+            console.log(`${rotate}는 없는 명령어입니다!`);
+            isError = true;
+            break;
+    }
+}
 
+// 큐브 무작위 섞기
+const mixCube = (time) => {
+    const rotateOptions = ['U\'', 'L\'', 'F\'', 'R\'', 'B\'', 'D\'', 'U', 'L', 'F', 'R', 'B', 'D'];
+
+    for (let i = 0; i < parseInt(time); i++) {
+        let idx = Math.floor(Math.random() * 12);
+        console.log('mixCube', idx);
+
+        let rotate = rotateOptions[idx];
+        rotating(rotate);
+    }
+    PrintCube();
 }
 
 // 조작 횟수 올리기
@@ -114,7 +185,6 @@ const upRotate = (num) => {
     for (let i = 0; i < 3; i++) {
         cube[cube_index.R][num][i] = temp[i];
     }
-    PrintCube();
 };
 
 // L 왼쪽면을 기준으로 회전
@@ -139,7 +209,6 @@ const leftRotate = (num) => {
     for (let i = 0; i < 3; i++) {
         cube[cube_index.F][i][num] = temp[i];
     }
-    PrintCube();
 };
 
 // F 앞면을 기준으로 회전
@@ -162,7 +231,6 @@ const frontRotate = (num) => {
     for (let i = 0; i < 3; i++) {
         cube[cube_index.R][i][col] = temp[i];
     }
-    PrintCube();
 };
 
 // R 오른쪽면을 기준으로 회전
@@ -186,7 +254,6 @@ const rightRotate = (num) => {
     for (let i = 0; i < 3; i++) {
         cube[cube_index.B][i][col] = temp[2 - i];
     }
-    PrintCube();
 };
 
 // B 뒷면을 기준으로 회전
@@ -209,7 +276,6 @@ const backRotate = (num) => {
     for (let i = 0; i < 3; i++) {
         cube[cube_index.L][i][num] = temp[2 - i];
     }
-    PrintCube();
 };
 
 // D 아랫면을 기준으로 회전
@@ -230,13 +296,11 @@ const downRotate = (num) => {
     for (let i = 0; i < 3; i++) {
         cube[cube_index.L][num][i] = temp[i];
     }
-    PrintCube();
 };
 
 // Q 프로그램을 종료하고, 조작 받은 명령의 갯수를 출력시킨다.
 const QuitProcess = () => {
-    endTime = new Date(); // 종료 시각 측정
-    elapsedTime = endTime - startTime;
+    let elapsedTime = countEndTime();
     console.log(`경과시간: ${elapsedTime}`);
     console.log(`조작갯수: ${count}`);
     console.log('이용해주셔서 감사합니다. 뚜뚜뚜.');
@@ -244,10 +308,45 @@ const QuitProcess = () => {
     return;
 }
 
+// 모든 면의 색깔이 일치하는지 비교하는 함수
+const IsComplete = () => {
+    const colors = ['B', 'W', 'O', 'G', 'Y', 'R'];
+    let isComplete = false;
+
+    outer: for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 3; j++) {
+            for (let k = 0; k < 3; k++) {
+                if (cube[i][j][k] !== colors[i]) {
+                    isComplete = false;
+                    break outer;
+                } else {
+                    isComplete = true;
+                }
+            }
+        }
+    }
+    console.log('isComplete', isComplete);
+
+    if (isComplete) {
+        console.log('축하합니다. 큐브를 맞추셨습니다아~*^^*');
+        let elapsedTime = countEndTime();
+        console.log(`경과시간: ${elapsedTime}`);
+        console.log(`조작갯수: ${count}`);
+        console.log('이용해주셔서 감사합니다. 뚜뚜뚜.');
+        process.exit(0);
+        return;
+    }
+}
+
+const countEndTime = () => {
+    endTime = new Date(); // 종료 시각 측정
+    const diffTime = endTime.getTime() - startTime.getTime();
+    const elapsedSec = parseInt(diffTime / 1000).toString();
+    const elapsedMin = parseInt(diffTime / 1000 / 60).toString();
+    return (elapsedMin[1] ? elapsedMin : '0' + elapsedMin) + ':' + (elapsedSec[1] ? elapsedSec : '0' + elapsedSec);
+}
+
 const RubiksCube = (args) => {
-    mixCube();
-    startTime = new Date(); // 시작 시각 측정
-    console.log(startTime);
     const rotate_list = args.match(/[\D](')|[\D]/g);
 
     for (let c = 0; c < rotate_list.length; c++) {
@@ -256,80 +355,21 @@ const RubiksCube = (args) => {
         if (rotate !== 'Q') { // 종료일 때는 명령어 출력 안함
             console.log(rotate);
         }
+        rotating(rotate);
 
-        switch (rotate) {
-            case 'U\'':
-                counterClockwise(cube_index.U);
-                downRotate(0);
-                AddCount();
-                break;
-            case 'L\'':
-                counterClockwise(cube_index.L);
-                rightRotate(0);
-                AddCount();
-                break;
-            case 'F\'':
-                counterClockwise(cube_index.F);
-                backRotate(2);
-                AddCount();
-                break;
-            case 'R\'':
-                counterClockwise(cube_index.R);
-                leftRotate(2);
-                AddCount();
-                break;
-            case 'B\'':
-                counterClockwise(cube_index.B);
-                frontRotate(0);
-                AddCount();
-                break;
-            case 'D\'':
-                counterClockwise(cube_index.D);
-                upRotate(2);
-                AddCount();
-                break;
-            case 'U':
-                clockwise(cube_index.U);
-                upRotate(0);
-                AddCount();
-                break;
-            case 'L':
-                clockwise(cube_index.L);
-                leftRotate(0);
-                AddCount();
-                break;
-            case 'F':
-                clockwise(cube_index.F);
-                frontRotate(2);
-                AddCount();
-                break;
-            case 'R':
-                clockwise(cube_index.R);
-                rightRotate(2);
-                AddCount();
-                break;
-            case 'B':
-                clockwise(cube_index.B);
-                backRotate(0);
-                AddCount();
-                break;
-            case 'D':
-                clockwise(cube_index.D)
-                downRotate(2);
-                AddCount();
-                break;
-            case 'Q':
-                QuitProcess();
-                break;
-            default:
-                console.log(`${rotate}는 없는 명령어입니다!`);
-                break;
+        if (!isError) {
+            AddCount();
+            PrintCube();
+            IsComplete(); // 매번 성공 여부 확인
         }
     }
 }
 
 const main = () => {
     InitCube(); // 큐브 초기화 및 초기 상태 출력
+    mixCube(10); // 큐브 섞기
+    startTime = new Date(); // 시작 시각 측정
+    console.log(startTime);
     while (true) {
         const input = readlineSync.question('CUBE> ');
         try {
