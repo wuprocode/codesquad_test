@@ -30,6 +30,20 @@ const cube_index = {
     D: 5,
 };
 
+// 큐브 무작위 섞기
+const mixCube = (time) => {
+    const rotateOptions = ['U\'', 'L\'', 'F\'', 'R\'', 'B\'', 'D\'', 'U', 'L', 'F', 'R', 'B', 'D'];
+
+    for (let i = 0; i < parseInt(time); i++) {
+        let idx = Math.floor(Math.random() * 12);
+        // console.log('mixCube', idx);
+
+        let rotate = rotateOptions[idx];
+        rotating(rotate);
+    }
+    // PrintCube();
+};
+
 const rotating = (rotate) => {
     isError = false;
     switch (rotate) {
@@ -91,24 +105,10 @@ const rotating = (rotate) => {
     }
 }
 
-// 큐브 무작위 섞기
-const mixCube = (time) => {
-    const rotateOptions = ['U\'', 'L\'', 'F\'', 'R\'', 'B\'', 'D\'', 'U', 'L', 'F', 'R', 'B', 'D'];
-
-    for (let i = 0; i < parseInt(time); i++) {
-        let idx = Math.floor(Math.random() * 12);
-        console.log('mixCube', idx);
-
-        let rotate = rotateOptions[idx];
-        rotating(rotate);
-    }
-    PrintCube();
-}
-
 // 조작 횟수 올리기
 const AddCount = () => {
     count++;
-    console.log('count: ', count);
+    // console.log('count: ', count);
 };
 
 // 출력 - 큐브의 6면을 펼친 상태로 출력한다.
@@ -124,6 +124,35 @@ const PrintCube = () => {
         if (i === 0 || i === 4 || i === 5) {
             console.log(' ');
         }
+    }
+};
+
+// 모든 면의 색깔이 일치하는지 비교하는 함수
+const IsComplete = () => {
+    const colors = ['B', 'W', 'O', 'G', 'Y', 'R'];
+    let isComplete = false;
+
+    outer: for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 3; j++) {
+            for (let k = 0; k < 3; k++) {
+                if (cube[i][j][k] !== colors[i]) {
+                    isComplete = false;
+                    break outer;
+                } else {
+                    isComplete = true;
+                }
+            }
+        }
+    }
+    // console.log('isComplete', isComplete);
+    if (isComplete) {
+        console.log('축하합니다. 큐브를 맞추셨습니다아~*^^*');
+        let elapsedTime = countEndTime();
+        console.log(`경과시간: ${elapsedTime}`);
+        console.log(`조작갯수: ${count}`);
+        console.log('이용해주셔서 감사합니다. 뚜뚜뚜.');
+        process.exit(0);
+        return;
     }
 };
 
@@ -298,6 +327,14 @@ const downRotate = (num) => {
     }
 };
 
+const countEndTime = () => {
+    endTime = new Date(); // 종료 시각 측정
+    const diffTime = endTime.getTime() - startTime.getTime();
+    const elapsedSec = parseInt(diffTime / 1000).toString();
+    const elapsedMin = parseInt(diffTime / 1000 / 60).toString();
+    return (elapsedMin[1] ? elapsedMin : '0' + elapsedMin) + ':' + (elapsedSec[1] ? elapsedSec : '0' + elapsedSec);
+}
+
 // Q 프로그램을 종료하고, 조작 받은 명령의 갯수를 출력시킨다.
 const QuitProcess = () => {
     let elapsedTime = countEndTime();
@@ -306,44 +343,6 @@ const QuitProcess = () => {
     console.log('이용해주셔서 감사합니다. 뚜뚜뚜.');
     process.exit(0);
     return;
-}
-
-// 모든 면의 색깔이 일치하는지 비교하는 함수
-const IsComplete = () => {
-    const colors = ['B', 'W', 'O', 'G', 'Y', 'R'];
-    let isComplete = false;
-
-    outer: for (let i = 0; i < 6; i++) {
-        for (let j = 0; j < 3; j++) {
-            for (let k = 0; k < 3; k++) {
-                if (cube[i][j][k] !== colors[i]) {
-                    isComplete = false;
-                    break outer;
-                } else {
-                    isComplete = true;
-                }
-            }
-        }
-    }
-    console.log('isComplete', isComplete);
-
-    if (isComplete) {
-        console.log('축하합니다. 큐브를 맞추셨습니다아~*^^*');
-        let elapsedTime = countEndTime();
-        console.log(`경과시간: ${elapsedTime}`);
-        console.log(`조작갯수: ${count}`);
-        console.log('이용해주셔서 감사합니다. 뚜뚜뚜.');
-        process.exit(0);
-        return;
-    }
-}
-
-const countEndTime = () => {
-    endTime = new Date(); // 종료 시각 측정
-    const diffTime = endTime.getTime() - startTime.getTime();
-    const elapsedSec = parseInt(diffTime / 1000).toString();
-    const elapsedMin = parseInt(diffTime / 1000 / 60).toString();
-    return (elapsedMin[1] ? elapsedMin : '0' + elapsedMin) + ':' + (elapsedSec[1] ? elapsedSec : '0' + elapsedSec);
 }
 
 const RubiksCube = (args) => {
@@ -355,7 +354,7 @@ const RubiksCube = (args) => {
         if (rotate !== 'Q') { // 종료일 때는 명령어 출력 안함
             console.log(rotate);
         }
-        rotating(rotate);
+        rotating(rotate); // 명령어 동작 수행 함수
 
         if (!isError) {
             AddCount();
@@ -369,7 +368,7 @@ const main = () => {
     InitCube(); // 큐브 초기화 및 초기 상태 출력
     mixCube(10); // 큐브 섞기
     startTime = new Date(); // 시작 시각 측정
-    console.log(startTime);
+    // console.log(startTime);
     while (true) {
         const input = readlineSync.question('CUBE> ');
         try {
