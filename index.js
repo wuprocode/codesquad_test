@@ -168,6 +168,7 @@ const TwoDArray = (args) => {
 }
 
 const main = () => {
+    PrintArray(initialState); // 처음 시작 시 초기 상태 출력
     while (true) {
         const input = readlineSync.question('CUBE> ');
         try {
