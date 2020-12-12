@@ -44,6 +44,7 @@ const mixCube = (time) => {
     // PrintCube();
 };
 
+// 큐브 돌리기
 const rotating = (rotate) => {
     isError = false;
     switch (rotate) {
@@ -111,20 +112,42 @@ const AddCount = () => {
     // console.log('count: ', count);
 };
 
-// 출력 - 큐브의 6면을 펼친 상태로 출력한다.
-const PrintCube = () => {
-    for (let i = 0; i < 6; i++) {
+// 한 면 출력하기
+const PrintTwoDArray = (c) => {
+    let body = '';
+    for (let i = 0; i < 3; i++) {
+        body += '                ';
         for (let j = 0; j < 3; j++) {
-            if (i === 0 || i === 5) {
-                console.log('                ' + cube[i][j].join(' '));
-            } else {
-                console.log('  '.repeat(5 * (i - 1)) + cube[i][j].join(' '));
-            }
+            body += cube[c][i][j];
+            body += ' ';
         }
-        if (i === 0 || i === 4 || i === 5) {
-            console.log(' ');
-        }
+        body += '\n';
     }
+    console.log(body);
+    console.log(' ');
+}
+
+// 출력 - 큐브의 6면을 펼친 상태로 출력하기
+const PrintCube = () => {
+    PrintTwoDArray(0);
+
+    let body = '';
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 1; j < 5; j++) {
+            body += '  ';
+            for (let k = 0; k < 3; k++) {
+                body += cube[j][0][k];
+                body += ' ';
+            }
+            body += ' ';
+        }
+        body += '\n';
+    }
+    console.log(body);
+    console.log(' ');
+
+    PrintTwoDArray(5);
 };
 
 // 모든 면의 색깔이 일치하는지 비교하는 함수
@@ -346,20 +369,44 @@ const QuitProcess = () => {
 }
 
 const RubiksCube = (args) => {
-    const rotate_list = args.match(/[\D](')|[\D]/g);
+    const rotate_list = args.match(/[\D](')|[\d][\D]|[\D]/g);
 
     for (let c = 0; c < rotate_list.length; c++) {
-        let rotate = rotate_list[c];
+        let target = rotate_list[c];
+        let rotate;
 
-        if (rotate !== 'Q') { // 종료일 때는 명령어 출력 안함
-            console.log(rotate);
+        if (/^\d/.test(target)) { // 2R처럼 명령어줄에 숫자가 포함되어 있는 경우
+            rotate = target[target.length - 1];
+        } else {
+            rotate = target;
         }
-        rotating(rotate); // 명령어 동작 수행 함수
 
-        if (!isError) {
-            AddCount();
-            PrintCube();
-            IsComplete(); // 매번 성공 여부 확인
+        if (/^\d/.test(target)) { // 2R처럼 명령어줄에 숫자가 포함되어 있는 경우
+            for (let i = 0; i < parseInt(target[0]); i++) {
+                if (rotate !== 'Q') { // 종료일 때는 명령어 출력 안함
+                    console.log(rotate);
+                }
+
+                rotating(rotate); // 명령어 동작 수행 함수
+
+                if (!isError) {
+                    AddCount();
+                    PrintCube();
+                    IsComplete(); // 매번 성공 여부 확인
+                }
+            }
+        } else {
+            if (rotate !== 'Q') { // 종료일 때는 명령어 출력 안함
+                console.log(rotate);
+            }
+
+            rotating(rotate); // 명령어 동작 수행 함수
+
+            if (!isError) {
+                AddCount();
+                PrintCube();
+                IsComplete(); // 매번 성공 여부 확인
+            }
         }
     }
 }
@@ -375,7 +422,7 @@ const main = () => {
             RubiksCube(input);
         } catch (err) {
             console.log('문자열 형태만 입력 가능합니다.');
-            console.error(err);
+            // console.error(err);
         }
     }
 }
