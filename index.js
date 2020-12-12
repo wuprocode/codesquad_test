@@ -31,12 +31,12 @@ const cube_index = {
 };
 
 // 큐브 무작위 섞기
-const mixCube = (time) => {
+const mixCube = (time) => { // R B L
     const rotateOptions = ['U\'', 'L\'', 'F\'', 'R\'', 'B\'', 'D\'', 'U', 'L', 'F', 'R', 'B', 'D'];
 
     for (let i = 0; i < parseInt(time); i++) {
         let idx = Math.floor(Math.random() * 12);
-        // console.log('mixCube', idx);
+        console.log('mixCube', idx);
 
         let rotate = rotateOptions[idx];
         rotating(rotate);
@@ -137,7 +137,7 @@ const PrintCube = () => {
         for (let j = 1; j < 5; j++) {
             body += '  ';
             for (let k = 0; k < 3; k++) {
-                body += cube[j][0][k];
+                body += cube[j][i][k];
                 body += ' ';
             }
             body += ' ';
@@ -222,6 +222,7 @@ const counterClockwise = (index) => {
 // U 윗면을 기준으로 회전
 const upRotate = (num) => {
     temp = new Array(3);
+
     for (let i = 0; i < 3; i++) {
         temp[i] = cube[cube_index.B][num][i];
     }
@@ -333,6 +334,7 @@ const backRotate = (num) => {
 // D 아랫면을 기준으로 회전
 const downRotate = (num) => {
     temp = new Array(3);
+
     for (let i = 0; i < 3; i++) {
         temp[i] = cube[cube_index.B][num][i];
     }
@@ -413,7 +415,7 @@ const RubiksCube = (args) => {
 
 const main = () => {
     InitCube(); // 큐브 초기화 및 초기 상태 출력
-    mixCube(10); // 큐브 섞기
+    mixCube(0); // 큐브 섞기
     startTime = new Date(); // 시작 시각 측정
     // console.log(startTime);
     while (true) {
