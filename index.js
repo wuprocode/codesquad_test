@@ -137,7 +137,7 @@ const PrintCube = () => {
         for (let j = 1; j < 5; j++) {
             body += '  ';
             for (let k = 0; k < 3; k++) {
-                body += cube[j][0][k];
+                body += cube[j][i][k];
                 body += ' ';
             }
             body += ' ';
