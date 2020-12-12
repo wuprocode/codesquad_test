@@ -415,7 +415,7 @@ const RubiksCube = (args) => {
 
 const main = () => {
     InitCube(); // 큐브 초기화 및 초기 상태 출력
-    mixCube(0); // 큐브 섞기
+    mixCube(10); // 큐브 섞기
     startTime = new Date(); // 시작 시각 측정
     // console.log(startTime);
     while (true) {
