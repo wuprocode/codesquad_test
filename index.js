@@ -17,7 +17,7 @@ const InitCube = () => {
             }
         }
     }
-    PrintCube();
+    // PrintCube();
 };
 
 // 큐브 기호
@@ -36,12 +36,12 @@ const mixCube = (time) => { // R B L
 
     for (let i = 0; i < parseInt(time); i++) {
         let idx = Math.floor(Math.random() * 12);
-        console.log('mixCube', idx);
+        // console.log('mixCube', idx);
 
         let rotate = rotateOptions[idx];
         rotating(rotate);
     }
-    // PrintCube();
+    PrintCube();
 };
 
 // 큐브 돌리기
